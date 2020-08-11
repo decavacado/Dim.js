@@ -1,9 +1,10 @@
 //Function that does stuff with the history API
 
-function pushHistory(title, url, name){
+function pushHistory(title, url, name, data){
     console.log(name)
     history.pushState({url: url}, "Test", name)
     sessionStorage.setItem("dim_location", url)
+    sessionStorage.setItem("dim_content", JSON.stringify(data))
     console.log(url)
 }
 
@@ -134,6 +135,8 @@ class Dim {
     }
 
     dim_load(){
+        let data = JSON.parse(sessionStorage.getItem("dim_content"))
+        this.dim_render(data)
         let dims = document.getElementsByClassName("dim_link")
         let that = this
         window.addEventListener("popstate", function(e){
@@ -151,12 +154,13 @@ class Dim {
         for(let link of dims){
             link.addEventListener("click", function(e){
                 e.preventDefault()
-                pushHistory("",this.href,"#" + this.getAttribute("linket"))
+                let linko = this
                 fetch(this.href)
                     .then(function(res){
                         return res.json()
                     })
                     .then(function(data){
+                        pushHistory("",linko.href,"#" + linko.getAttribute("linket"), data)
                         this.dim_render(data)
                     }.bind(that))
             })
