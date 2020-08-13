@@ -2,7 +2,8 @@
 
 function pushHistory(title, url, name, data){
     console.log(name)
-    history.pushState({url: url}, "Test", name)
+    console.log(url)
+    history.pushState({url: url, name: name, data: data}, "Test", name)
     sessionStorage.setItem("dim_location", url)
     sessionStorage.setItem("dim_route", name)
     sessionStorage.setItem("dim_content", JSON.stringify(data))
@@ -146,21 +147,32 @@ class Dim {
 
     dim_load(){
         if(sessionStorage.getItem("dim_content")){
-            let data = JSON.parse(sessionStorage.getItem("dim_content"))
-            this.dim_render(data)
+            if(window.location.pathname + window.location.search === sessionStorage.getItem("dim_route")){
+                let data = JSON.parse(sessionStorage.getItem("dim_content"))
+                this.dim_render(data)
+            }
         }
         let dims = document.getElementsByClassName("dim_link")
         let that = this
         window.addEventListener("popstate", function(e){
             let state = e.state
+            sessionStorage.setItem("dim_location", state.url)
+            sessionStorage.setItem("dim_route", state.name)
+            sessionStorage.setItem("dim_content", JSON.stringify(state.data))
             console.log(state)
-            fetch(state.url)
-                .then(function(res){
-                    return res.json()
-                })
-                .then(function(data){
-                    that.dim_render(data)
-                })
+            if(state){
+                fetch(state.url)
+                    .then(function(res){
+                        return res.json()
+                    })
+                    .then(function(data){
+                        that.dim_render(data)
+                    })
+            }else {
+                console.log(window.location)
+                let temp = window.location.href
+                console.log(temp)
+            }
         })
         //Finding elements with the class dim_link and adding a click event to them
         for(let link of dims){
@@ -172,7 +184,7 @@ class Dim {
                         return res.json()
                     })
                     .then(function(data){
-                        pushHistory("",linko.href,"#" + linko.getAttribute("linket"), data)
+                        pushHistory("",linko.href,"/" + linko.getAttribute("linket"), data)
                         this.dim_render(data)
                     }.bind(that))
             })
