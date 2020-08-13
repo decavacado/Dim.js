@@ -4,6 +4,7 @@ function pushHistory(title, url, name, data){
     console.log(name)
     history.pushState({url: url}, "Test", name)
     sessionStorage.setItem("dim_location", url)
+    sessionStorage.setItem("dim_route", name)
     sessionStorage.setItem("dim_content", JSON.stringify(data))
     console.log(url)
 }
@@ -11,9 +12,9 @@ function pushHistory(title, url, name, data){
 
 
 class Dim {
-    constructor(tags=[],anim_class="",base_route=""){
-        this.tags = tags
+    constructor(anim_class="",leave_class="",base_route=""){
         this.anim_class = anim_class
+        this.leave_class = leave_class
     }
     //Function meant to be recursively called when a element has children 
     dim_cre(e, children){
@@ -58,8 +59,17 @@ class Dim {
                     this.dim_cre(e, e.children)
                 }
             }else {
+                let that = this
                 console.log("removed")
-                e.remove()
+                if(this.leave_class){
+                    e.classList.add(this.leave_class)
+                    e.addEventListener("webkitAnimationEnd", function(){
+                        this.classList.remove(that.leave_class)
+                        e.remove()
+                    })
+                }else {
+                    e.remove()
+                }
             }
         }
 
@@ -135,8 +145,10 @@ class Dim {
     }
 
     dim_load(){
-        let data = JSON.parse(sessionStorage.getItem("dim_content"))
-        this.dim_render(data)
+        if(sessionStorage.getItem("dim_content")){
+            let data = JSON.parse(sessionStorage.getItem("dim_content"))
+            this.dim_render(data)
+        }
         let dims = document.getElementsByClassName("dim_link")
         let that = this
         window.addEventListener("popstate", function(e){
@@ -170,7 +182,7 @@ class Dim {
 }
 
 
-let dim =  new Dim([],"enter")
+let dim =  new Dim("enter","leave")
 
 console.log(dim)
 
