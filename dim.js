@@ -143,6 +143,15 @@ class Dim {
             console.dir(document.body)
         }
         
+        let route_change_event = new CustomEvent("route_change",
+        {
+            detail: {
+                route: window.location
+            }
+        }
+        )
+
+        window.dispatchEvent(route_change_event)
     }
 
     dim_load(){
@@ -203,3 +212,7 @@ let dim =  new Dim("enter","leave")
 console.log(dim)
 
 dim.dim_load()
+
+window.addEventListener("route_change", function(obj){
+    console.log(obj.detail.route)
+})
