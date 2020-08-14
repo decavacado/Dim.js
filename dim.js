@@ -147,6 +147,7 @@ class Dim {
 
     dim_load(){
         if(sessionStorage.getItem("dim_content")){
+            console.log(window.location)
             if(window.location.pathname + window.location.search === sessionStorage.getItem("dim_route")){
                 let data = JSON.parse(sessionStorage.getItem("dim_content"))
                 this.dim_render(data)
@@ -156,10 +157,12 @@ class Dim {
         let that = this
         window.addEventListener("popstate", function(e){
             let state = e.state
-            sessionStorage.setItem("dim_location", state.url)
-            sessionStorage.setItem("dim_route", state.name)
-            sessionStorage.setItem("dim_content", JSON.stringify(state.data))
-            console.log(state)
+            if(state){
+                sessionStorage.setItem("dim_location", state.url)
+                sessionStorage.setItem("dim_route", state.name)
+                sessionStorage.setItem("dim_content", JSON.stringify(state.data))
+                console.log(state)
+            }
             if(state){
                 fetch(state.url)
                     .then(function(res){
@@ -171,6 +174,7 @@ class Dim {
             }else {
                 console.log(window.location)
                 let temp = window.location.href
+                window.location.href = temp
                 console.log(temp)
             }
         })
