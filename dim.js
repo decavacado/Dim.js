@@ -1,3 +1,12 @@
+/* Dim.js 
+   Made by Declan Amoako
+
+   2020
+
+*/
+
+
+
 //Function that does stuff with the history API
 
 function pushHistory(title, url, name, data){
@@ -85,7 +94,7 @@ class Dim {
             }
         }
 
-        //Replaces to defined elements happen here
+        //Replaces to defined elements happen here. THis part of the function replaces elements in the dom.
         for(let i of obj.replaces){
             let element = document.getElementById(i.id)
             if(element){
@@ -95,7 +104,7 @@ class Dim {
             }
         }
 
-        //Adding of new content happens here
+        //Adding of new content happens here. This part of the function takes things from content and parses then adds it to the dom before your last element usually a script
         if(obj.content){
             let parser = new DOMParser()
             let last_el = document.body.lastElementChild
@@ -118,7 +127,7 @@ class Dim {
             console.dir(document.body)
         }
         
-        //head rendering
+        //head rendering. This part of the function renders thing from the head property 
         console.log(obj)
         for(let e of Array.from(head.children)){
             if(e.classList.contains("dim_ex") || e.classList.contains("dim_link")){
@@ -206,13 +215,3 @@ class Dim {
     }
 }
 
-
-let dim =  new Dim("enter","leave")
-
-console.log(dim)
-
-dim.dim_load()
-
-window.addEventListener("route_change", function(obj){
-    console.log(obj.detail.route)
-})
