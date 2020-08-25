@@ -62,6 +62,7 @@ class Dim {
         let head = document.head
 
         for(let e of Array.from(body.children)){
+            console.log(e)
             if(e.classList.contains("dim_ex") || e.classList.contains("dim_link")){
                 console.log("excluded")
                 console.log(e.children.length)
@@ -71,14 +72,22 @@ class Dim {
             }else {
                 let that = this
                 console.log("removed")
-                if(this.leave_class){
-                    e.classList.add(this.leave_class)
-                    e.addEventListener("webkitAnimationEnd", function(){
-                        this.classList.remove(that.leave_class)
-                        e.remove()
-                    })
-                }else {
+                if(e.nodeName === "SCRIPT"){
                     e.remove()
+                }else {
+                    if(this.leave_class){
+                        e.classList.add(this.leave_class)
+                        e.addEventListener("webkitAnimationEnd", function(){
+                            this.classList.remove(that.leave_class)
+                            e.remove()
+                        })
+                        e.addEventListener("animationend", function(){
+                            this.classList.remove(that.leave_class)
+                            e.remove()
+                        })
+                    }else {
+                        e.remove()
+                    }
                 }
             }
         }
@@ -117,9 +126,11 @@ class Dim {
                 body.insertBefore(i, last_el)
                 if(this.anim_class){
                     i.classList.add(this.anim_class)
-                    i.addEventListener("webkitAnimationEnd", function(){
+                    /*i.addEventListener("webkitAnimationEnd", function(){
                         this.classList.remove(that.anim_class)
-                        console.log(this)
+                    })*/
+                    i.addEventListener("animationend", function(){
+                        this.classList.remove(that.anim_class)
                     })
                 }
             }
@@ -163,6 +174,8 @@ class Dim {
         window.dispatchEvent(route_change_event)
     }
 
+
+    //This function reads the dom for links with dim-link
     dim_load(){
         if(sessionStorage.getItem("dim_content")){
             console.log(window.location)
@@ -196,6 +209,7 @@ class Dim {
                 console.log(temp)
             }
         })
+
         //Finding elements with the class dim_link and adding a click event to them
         for(let link of dims){
             link.addEventListener("click", function(e){
